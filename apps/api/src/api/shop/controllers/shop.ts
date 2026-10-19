@@ -40,7 +40,7 @@ export default factories.createCoreController('api::shop.shop', ({ strapi }) => 
       data: {
         ...(body.cover ? { cover: body.cover } : {}),
       },
-      populate: { cover: true, university: true, products: { populate: { image: true } } },
+      populate: { cover: true, university: true, products: { populate: { image: true, category: true } } },
     });
     ctx.body = { data: updated };
   },
@@ -50,7 +50,7 @@ export default factories.createCoreController('api::shop.shop', ({ strapi }) => 
     if (!user) return ctx.unauthorized();
     const shops = await strapi.documents('api::shop.shop').findMany({
       filters: { owner: { id: user.id } },
-      populate: { cover: true, university: true, products: { populate: { image: true } } },
+      populate: { cover: true, university: true, products: { populate: { image: true, category: true } } },
     });
     ctx.body = { data: shops[0] ?? null };
   },

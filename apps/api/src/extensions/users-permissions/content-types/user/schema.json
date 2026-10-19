@@ -52,6 +52,7 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "phone": { "type": "string" }
+    "phone": { "type": "string" },
+    "displayName": { "type": "string" }
   }
 }

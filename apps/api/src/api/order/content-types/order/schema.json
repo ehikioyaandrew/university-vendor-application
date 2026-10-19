@@ -26,6 +26,22 @@
       "relation": "manyToOne",
       "target": "api::product.product"
     },
+    "fulfillment": {
+      "type": "enumeration",
+      "enum": ["pickup", "delivery"],
+      "default": "pickup"
+    },
+    "note": { "type": "text" },
+    "customer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "address": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::address.address"
+    },
     "receipt": {
       "type": "media",
       "multiple": false,

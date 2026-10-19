@@ -17,6 +17,12 @@
       "required": false,
       "allowedTypes": ["images"]
     },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "products"
+    },
     "shop": {
       "type": "relation",
       "relation": "manyToOne",

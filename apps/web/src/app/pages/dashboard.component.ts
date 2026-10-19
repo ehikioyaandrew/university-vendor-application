@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
 import { SessionService } from '../core/session.service';
-import { Order, Shop } from '../core/models';
+import { Category, Order, Shop } from '../core/models';
 import { assetUrl } from '../core/media';
 import { HeaderComponent } from '../shell/header.component';
 import { PhotoComponent } from '../shell/photo.component';
@@ -38,6 +38,13 @@ import { PhotoComponent } from '../shell/photo.component';
           </form>
           <form class="form" style="margin-top:16px" (ngSubmit)="add()">
             <label>Item name <input name="item" [(ngModel)]="itemName" required /></label>
+            <label>Category
+              <select name="category" [(ngModel)]="category" required>
+                @for (item of categories; track item.documentId) {
+                  <option [value]="item.documentId">{{ item.name }}</option>
+                }
+              </select>
+            </label>
             <label>Price in naira <input name="price" type="number" [(ngModel)]="price" required /></label>
             <label>Item photo <input name="photo" type="file" accept="image/*" (change)="pickItem($event)" /></label>
             @if (error) { <p class="error">{{ error }}</p> }
@@ -86,6 +93,8 @@ export class DashboardComponent {
   private readonly router = inject(Router);
   shop: Shop | null = null;
   orders: Order[] = [];
+  categories: Category[] = [];
+  category = '';
   token = this.session.token();
   itemName = '';
   price = 0;
@@ -125,7 +134,7 @@ export class DashboardComponent {
     this.busy = true;
     this.error = '';
     this.withAsset(this.itemPhoto, (image) => {
-      this.api.addProduct(this.token!, { name: this.itemName, price: Number(this.price), image }).subscribe({
+      this.api.addProduct(this.token!, { name: this.itemName, price: Number(this.price), category: this.category, image }).subscribe({
         next: () => {
           this.itemName = '';
           this.price = 0;
@@ -226,6 +235,12 @@ export class DashboardComponent {
       error: () => {
         this.session.clear();
         this.router.navigateByUrl('/login');
+      },
+    });
+    this.api.categories().subscribe({
+      next: (response) => {
+        this.categories = response.data ?? [];
+        if (!this.category) this.category = this.categories[0]?.documentId ?? '';
       },
     });
     this.api.orders(this.token).subscribe({

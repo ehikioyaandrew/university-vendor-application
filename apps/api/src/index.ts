@@ -7,6 +7,14 @@ const universities = [
   { name: 'UNIPORT', slug: 'uniport' },
 ];
 
+const categories = [
+  { name: 'Food', slug: 'food' },
+  { name: 'Fashion', slug: 'fashion' },
+  { name: 'Beauty', slug: 'beauty' },
+  { name: 'Gadgets', slug: 'gadgets' },
+  { name: 'Print', slug: 'print' },
+];
+
 const publicActions = [
   'api::university.university.find',
   'api::university.university.findOne',
@@ -14,6 +22,32 @@ const publicActions = [
   'api::shop.shop.findOne',
   'api::product.product.find',
   'api::product.product.findOne',
+  'api::review.review.find',
+  'api::review.review.findOne',
+  'api::category.category.find',
+  'api::category.category.findOne',
+];
+
+const customerActions = [
+  'api::address.address.create',
+  'api::address.address.find',
+  'api::address.address.findOne',
+  'api::address.address.update',
+  'api::address.address.delete',
+  'api::order.order.place',
+  'api::order.order.history',
+  'api::order.order.findOne',
+  'api::review.review.create',
+  'api::review.review.find',
+  'api::review.review.findOne',
+  'api::product.product.find',
+  'api::product.product.findOne',
+  'api::shop.shop.find',
+  'api::shop.shop.findOne',
+  'api::university.university.find',
+  'api::university.university.findOne',
+  'api::category.category.find',
+  'api::category.category.findOne',
 ];
 
 const sellerActions = [
@@ -29,8 +63,11 @@ const sellerActions = [
   'api::order.order.create',
   'api::order.order.find',
   'api::order.order.findOne',
+  'api::order.order.update',
   'api::university.university.find',
   'api::university.university.findOne',
+  'api::category.category.find',
+  'api::category.category.findOne',
   'plugin::upload.content-api.upload',
   'plugin::upload.content-api.find',
   'plugin::upload.content-api.findOne',
@@ -67,7 +104,28 @@ export default {
       }
     }
 
+    const listed = await strapi.documents('api::category.category').findMany();
+    if (listed.length === 0) {
+      for (const category of categories) {
+        await strapi.documents('api::category.category').create({ data: category });
+      }
+    }
+
+    const customer = await strapi.db.query('plugin::users-permissions.role').findOne({
+      where: { type: 'customer' },
+    });
+    if (!customer) {
+      await strapi.db.query('plugin::users-permissions.role').create({
+        data: {
+          name: 'Customer',
+          description: 'Buyers who order, save a delivery address, and leave a rating',
+          type: 'customer',
+        },
+      });
+    }
+
     await allow(strapi, 'public', publicActions);
     await allow(strapi, 'authenticated', sellerActions);
+    await allow(strapi, 'customer', customerActions);
   },
 };

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { MediaAsset } from './media';
-import { AuthResponse, ListResponse, Order, Product, Shop, University } from './models';
+import { Address, AuthResponse, Category, ListResponse, Order, Product, Review, Shop, University } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -13,9 +13,13 @@ export class ApiService {
     return this.http.get<ListResponse<University>>(`${this.base}/api/universities`);
   }
 
+  categories() {
+    return this.http.get<ListResponse<Category>>(`${this.base}/api/categories`);
+  }
+
   products() {
     return this.http.get<ListResponse<Product>>(
-      `${this.base}/api/products?populate[shop]=true&populate[image]=true`,
+      `${this.base}/api/products?populate[category]=true&populate[image]=true&populate[shop][populate]=university`,
     );
   }
 
@@ -48,6 +52,59 @@ export class ApiService {
     });
   }
 
+  registerBuyer(input: { phone: string; password: string; name: string }) {
+    return this.http.post<AuthResponse>(`${this.base}/api/auth/buyer/register`, input);
+  }
+
+  loginBuyer(input: { phone: string; password: string }) {
+    const digits = input.phone.replace(/\D/g, '');
+    return this.http.post<AuthResponse>(`${this.base}/api/auth/local`, {
+      identifier: `${digits}@buyers.oja.local`,
+      password: input.password,
+    });
+  }
+
+  saveAddress(token: string, input: { label: string; line: string; area?: string; phone: string }) {
+    return this.http.post<{ data: Address }>(
+      `${this.base}/api/addresses`,
+      { data: input },
+      { headers: this.auth(token) },
+    );
+  }
+
+  myAddresses(token: string) {
+    return this.http.get<ListResponse<Address>>(`${this.base}/api/addresses`, { headers: this.auth(token) });
+  }
+
+  placeOrder(
+    token: string,
+    input: { product: string; fulfillment: 'pickup' | 'delivery'; address?: string; note?: string },
+  ) {
+    return this.http.post<{ data: Order }>(
+      `${this.base}/api/orders/place`,
+      { data: input },
+      { headers: this.auth(token) },
+    );
+  }
+
+  orderHistory(token: string) {
+    return this.http.get<ListResponse<Order>>(`${this.base}/api/orders/history`, { headers: this.auth(token) });
+  }
+
+  rateOrder(token: string, input: { order: string; stars: number; comment: string }) {
+    return this.http.post<{ data: Review }>(
+      `${this.base}/api/reviews`,
+      { data: input },
+      { headers: this.auth(token) },
+    );
+  }
+
+  reviews(shopId: string) {
+    return this.http.get<ListResponse<Review>>(
+      `${this.base}/api/reviews?filters[shop][documentId][$eq]=${shopId}`,
+    );
+  }
+
   openShop(token: string, input: { name: string; spot: string; university: string }) {
     return this.http.post<{ data: Shop }>(
       `${this.base}/api/shops`,
@@ -62,7 +119,7 @@ export class ApiService {
     });
   }
 
-  addProduct(token: string, input: { name: string; price: number; image?: number }) {
+  addProduct(token: string, input: { name: string; price: number; category: string; image?: number }) {
     return this.http.post(`${this.base}/api/products`, { data: input }, { headers: this.auth(token) });
   }
 

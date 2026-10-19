@@ -4,19 +4,17 @@ import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
 import { SessionService } from '../core/session.service';
 import { University } from '../core/models';
-import { HeaderComponent } from '../shell/header.component';
+import { AuthStageComponent } from '../shell/auth-stage.component';
 
 @Component({
   selector: 'app-signup',
-  imports: [HeaderComponent, FormsModule, RouterLink],
+  imports: [AuthStageComponent, FormsModule, RouterLink],
   template: `
-    <app-header />
-    <main class="wrap auth">
-      <div>
-        <h1>Open your shop on Oja.</h1>
-        <p class="lead">You keep selling on WhatsApp. The link you share lands in a shop the rest of campus can find.</p>
-      </div>
+    <app-auth-stage>
       <form class="form" (ngSubmit)="submit()">
+        <p class="gate-kicker" style="color:var(--ink);background:#fff1e6">New stall</p>
+        <h1>Open your shop.</h1>
+        <p class="lead">Share one link on your status. The rest of campus can find the stall.</p>
         <label>University
           <select name="university" [(ngModel)]="university" required>
             @for (item of universities; track item.documentId) {
@@ -33,7 +31,7 @@ import { HeaderComponent } from '../shell/header.component';
         <button class="btn orange block" type="submit" [disabled]="busy">Create my shop</button>
         <p class="fine">Already selling? <a routerLink="/login">Log in</a></p>
       </form>
-    </main>
+    </app-auth-stage>
   `,
 })
 export class SignupComponent {

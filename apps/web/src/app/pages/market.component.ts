@@ -2,7 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
-import { Product } from '../core/models';
+import { Category, Product } from '../core/models';
 import { HeaderComponent } from '../shell/header.component';
 import { PhotoComponent } from '../shell/photo.component';
 
@@ -12,6 +12,14 @@ import { PhotoComponent } from '../shell/photo.component';
   template: `
     <app-header />
     <main class="wrap">
+      <div class="chips">
+        <button type="button" [class.on]="!categoryId" (click)="categoryId = ''">All</button>
+        @for (category of categories; track category.documentId) {
+          <button type="button" [class.on]="categoryId === category.documentId" (click)="categoryId = category.documentId">
+            {{ category.name }}
+          </button>
+        }
+      </div>
       <div class="section-title">Every vendor <span>{{ shown.length }} items</span></div>
       <div class="grid">
         @for (item of shown; track item.documentId) {
@@ -20,7 +28,7 @@ import { PhotoComponent } from '../shell/photo.component';
             <div class="card-body">
               <p class="price">₦{{ item.price | number }}</p>
               <h2>{{ item.name }}</h2>
-              <p class="by">{{ item.shop?.name }}</p>
+              <p class="by">{{ item.shop?.name }}@if (item.category) { · {{ item.category.name }} }</p>
             </div>
           </a>
         } @empty {
@@ -34,10 +42,15 @@ export class MarketComponent {
   private readonly api = inject(ApiService);
   private readonly route = inject(ActivatedRoute);
   products: Product[] = [];
+  categories: Category[] = [];
+  categoryId = '';
   query = '';
 
   constructor() {
     this.route.queryParamMap.subscribe((params) => (this.query = (params.get('q') ?? '').toLowerCase()));
+    this.api.categories().subscribe({
+      next: (response) => (this.categories = response.data ?? []),
+    });
     this.api.products().subscribe({
       next: (response) => (this.products = response.data ?? []),
       error: () => (this.products = []),
@@ -45,9 +58,11 @@ export class MarketComponent {
   }
 
   get shown() {
-    if (!this.query) return this.products;
-    return this.products.filter((item) =>
-      `${item.name} ${item.shop?.name ?? ''}`.toLowerCase().includes(this.query),
-    );
+    return this.products.filter((item) => {
+      const matchesCategory = !this.categoryId || item.category?.documentId === this.categoryId;
+      const matchesQuery =
+        !this.query || `${item.name} ${item.shop?.name ?? ''} ${item.category?.name ?? ''}`.toLowerCase().includes(this.query);
+      return matchesCategory && matchesQuery;
+    });
   }
 }
