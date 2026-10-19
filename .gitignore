@@ -1,0 +1,16 @@
+node_modules
+dist
+.angular
+.tmp
+.strapi
+.cache
+build
+coverage
+*.log
+.env
+apps/api/.env
+apps/api/.env.test
+apps/api/.env.production
+apps/web/.env
+.DS_Store
+postgres-data

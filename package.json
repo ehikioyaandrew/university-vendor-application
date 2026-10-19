@@ -1,0 +1,18 @@
+{
+  "name": "oja",
+  "private": true,
+  "scripts": {
+    "dev": "npx concurrently -n api,web -c orange,blue \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "npm --prefix apps/api run develop",
+    "dev:web": "npm --prefix apps/web run start",
+    "dev:api:test": "npm --prefix apps/api run develop:test",
+    "dev:web:test": "npm --prefix apps/web run start -- --configuration=test",
+    "build": "npm --prefix apps/api run build && npm --prefix apps/web run build -- --configuration=production",
+    "build:test": "npm --prefix apps/web run build -- --configuration=test",
+    "start:api:prod": "npm --prefix apps/api run start:prod",
+    "db": "docker compose up -d"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

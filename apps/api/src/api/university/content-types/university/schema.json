@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "universities",
+  "info": {
+    "singularName": "university",
+    "pluralName": "universities",
+    "displayName": "University"
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "name": { "type": "string", "required": true, "unique": true },
+    "slug": { "type": "uid", "targetField": "name", "required": true },
+    "shops": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::shop.shop",
+      "mappedBy": "university"
+    }
+  }
+}
