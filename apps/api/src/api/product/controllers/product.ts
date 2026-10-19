@@ -18,8 +18,13 @@ export default factories.createCoreController('api::product.product', ({ strapi 
         price: body.price,
         soldOut: false,
         shop: shop.documentId,
+        ...(body.image ? { image: body.image } : {}),
       },
     });
-    ctx.body = { data: product };
+    const populated = await strapi.documents('api::product.product').findOne({
+      documentId: product.documentId,
+      populate: { image: true, shop: true },
+    });
+    ctx.body = { data: populated };
   },
 }));

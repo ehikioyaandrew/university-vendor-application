@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { AuthResponse, ListResponse, Product, Shop, University } from './models';
+import { MediaAsset } from './media';
+import { AuthResponse, ListResponse, Order, Product, Shop, University } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -13,18 +14,20 @@ export class ApiService {
   }
 
   products() {
-    return this.http.get<ListResponse<Product>>(`${this.base}/api/products?populate=shop`);
+    return this.http.get<ListResponse<Product>>(
+      `${this.base}/api/products?populate[shop]=true&populate[image]=true`,
+    );
   }
 
   product(documentId: string) {
     return this.http.get<{ data: Product }>(
-      `${this.base}/api/products/${documentId}?populate[shop][populate]=university`,
+      `${this.base}/api/products/${documentId}?populate[image]=true&populate[shop][populate]=university`,
     );
   }
 
   shop(documentId: string) {
     return this.http.get<{ data: Shop }>(
-      `${this.base}/api/shops/${documentId}?populate[products]=true&populate[university]=true`,
+      `${this.base}/api/shops/${documentId}?populate[cover]=true&populate[university]=true&populate[products][populate][image]=true`,
     );
   }
 
@@ -59,8 +62,34 @@ export class ApiService {
     });
   }
 
-  addProduct(token: string, input: { name: string; price: number }) {
+  addProduct(token: string, input: { name: string; price: number; image?: number }) {
     return this.http.post(`${this.base}/api/products`, { data: input }, { headers: this.auth(token) });
+  }
+
+  updateShopCover(token: string, shopId: string, cover: number) {
+    return this.http.put<{ data: Shop }>(
+      `${this.base}/api/shops/${shopId}`,
+      { data: { cover } },
+      { headers: this.auth(token) },
+    );
+  }
+
+  upload(token: string, file: File) {
+    const body = new FormData();
+    body.append('files', file);
+    return this.http.post<MediaAsset[]>(`${this.base}/api/upload`, body, { headers: this.auth(token) });
+  }
+
+  orders(token: string) {
+    return this.http.get<ListResponse<Order>>(`${this.base}/api/orders`, { headers: this.auth(token) });
+  }
+
+  addReceipt(token: string, input: { buyerName: string; amount: number; receipt?: number }) {
+    return this.http.post<{ data: Order }>(
+      `${this.base}/api/orders`,
+      { data: input },
+      { headers: this.auth(token) },
+    );
   }
 
   private auth(token: string) {

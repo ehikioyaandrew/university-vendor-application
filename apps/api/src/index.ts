@@ -25,8 +25,15 @@ const sellerActions = [
   'api::product.product.find',
   'api::product.product.findOne',
   'api::product.product.update',
+  'api::shop.shop.update',
+  'api::order.order.create',
+  'api::order.order.find',
+  'api::order.order.findOne',
   'api::university.university.find',
   'api::university.university.findOne',
+  'plugin::upload.content-api.upload',
+  'plugin::upload.content-api.find',
+  'plugin::upload.content-api.findOne',
 ];
 
 async function allow(app: Core.Strapi, roleType: string, actions: string[]) {

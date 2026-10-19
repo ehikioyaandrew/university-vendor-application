@@ -4,14 +4,16 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
 import { Shop } from '../core/models';
 import { HeaderComponent } from '../shell/header.component';
+import { PhotoComponent } from '../shell/photo.component';
 
 @Component({
   selector: 'app-store',
-  imports: [HeaderComponent, RouterLink, DecimalPipe],
+  imports: [HeaderComponent, RouterLink, DecimalPipe, PhotoComponent],
   template: `
     <app-header />
     <main class="wrap">
       @if (shop) {
+        <app-photo kind="cover" [file]="shop.cover" [alt]="shop.name" fallback="#ff6a00" />
         <header class="dash-hero">
           <p>{{ shop.university?.name }}</p>
           <h1>{{ shop.name }}</h1>
@@ -21,7 +23,7 @@ import { HeaderComponent } from '../shell/header.component';
         <div class="grid">
           @for (item of shop.products ?? []; track item.documentId) {
             <a class="card" [routerLink]="['/items', item.documentId]">
-              <div class="photo" style="background:#243038">{{ item.name.split(' ')[0] }}</div>
+              <app-photo [file]="item.image" [alt]="item.name" fallback="#243038" />
               <div class="card-body">
                 <p class="price">₦{{ item.price | number }}</p>
                 <h2>{{ item.name }}</h2>

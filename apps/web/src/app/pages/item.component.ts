@@ -4,15 +4,16 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
 import { Product } from '../core/models';
 import { HeaderComponent } from '../shell/header.component';
+import { PhotoComponent } from '../shell/photo.component';
 
 @Component({
   selector: 'app-item',
-  imports: [HeaderComponent, RouterLink, DecimalPipe],
+  imports: [HeaderComponent, RouterLink, DecimalPipe, PhotoComponent],
   template: `
     <app-header />
     <main class="wrap pdp">
       @if (item) {
-        <div class="hero-photo" style="background:#c45b38">{{ item.name }}</div>
+        <app-photo kind="hero-photo" [file]="item.image" [alt]="item.name" fallback="#c45b38" />
         <section class="buybox">
           <p class="price">₦{{ item.price | number }}</p>
           <h1>{{ item.name }}</h1>

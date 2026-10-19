@@ -19,9 +19,30 @@ export default factories.createCoreController('api::shop.shop', ({ strapi }) => 
         spot: body.spot,
         university: body.university,
         owner: user.documentId,
+        ...(body.cover ? { cover: body.cover } : {}),
       },
     });
     ctx.body = { data: shop };
+  },
+
+  async update(ctx) {
+    const user = ctx.state.user;
+    if (!user) return ctx.unauthorized();
+    const shops = await strapi.documents('api::shop.shop').findMany({
+      filters: { owner: { id: user.id } },
+    });
+    const shop = shops[0];
+    if (!shop || shop.documentId !== ctx.params.id) return ctx.forbidden();
+
+    const body = ctx.request.body?.data ?? {};
+    const updated = await strapi.documents('api::shop.shop').update({
+      documentId: shop.documentId,
+      data: {
+        ...(body.cover ? { cover: body.cover } : {}),
+      },
+      populate: { cover: true, university: true, products: { populate: { image: true } } },
+    });
+    ctx.body = { data: updated };
   },
 
   async mine(ctx) {
@@ -29,7 +50,7 @@ export default factories.createCoreController('api::shop.shop', ({ strapi }) => 
     if (!user) return ctx.unauthorized();
     const shops = await strapi.documents('api::shop.shop').findMany({
       filters: { owner: { id: user.id } },
-      populate: { university: true, products: true },
+      populate: { cover: true, university: true, products: { populate: { image: true } } },
     });
     ctx.body = { data: shops[0] ?? null };
   },

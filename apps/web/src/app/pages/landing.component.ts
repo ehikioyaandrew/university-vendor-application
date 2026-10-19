@@ -4,10 +4,11 @@ import { RouterLink } from '@angular/router';
 import { ApiService } from '../core/api.service';
 import { Product } from '../core/models';
 import { HeaderComponent } from '../shell/header.component';
+import { PhotoComponent } from '../shell/photo.component';
 
 @Component({
   selector: 'app-landing',
-  imports: [HeaderComponent, RouterLink, DecimalPipe],
+  imports: [HeaderComponent, RouterLink, DecimalPipe, PhotoComponent],
   template: `
     <app-header />
     <section class="hero">
@@ -25,7 +26,7 @@ import { HeaderComponent } from '../shell/header.component';
       <div class="grid">
         @for (item of products; track item.documentId) {
           <a class="card" [routerLink]="['/items', item.documentId]">
-            <div class="photo" [style.background]="hue(item.name)">{{ item.name.split(' ')[0] }}</div>
+            <app-photo [file]="item.image" [alt]="item.name" [fallback]="hue(item.name)" />
             <div class="card-body">
               <p class="price">₦{{ item.price | number }}</p>
               <h2>{{ item.name }}</h2>

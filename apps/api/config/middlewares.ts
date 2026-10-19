@@ -3,14 +3,23 @@ import type { Core } from '@strapi/strapi';
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Middlewares => [
   'strapi::logger',
   'strapi::errors',
-  'strapi::security',
+  {
+    name: 'strapi::security',
+    config: {
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    },
+  },
   {
     name: 'strapi::cors',
     config: {
-      origin: env('CORS_ORIGIN', 'http://localhost:4200')
-        .split(',')
-        .map((origin) => origin.trim())
-        .filter(Boolean),
+      origin: [
+        ...new Set(
+          `${env('CORS_ORIGIN', 'http://localhost:4200')},http://localhost:4200,http://127.0.0.1:4200`
+            .split(',')
+            .map((origin) => origin.trim())
+            .filter(Boolean),
+        ),
+      ],
     },
   },
   'strapi::poweredBy',

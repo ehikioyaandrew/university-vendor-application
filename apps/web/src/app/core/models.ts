@@ -1,3 +1,5 @@
+import { MediaAsset } from './media';
+
 export interface University {
   documentId: string;
   name: string;
@@ -9,6 +11,7 @@ export interface Shop {
   name: string;
   slug?: string;
   spot: string;
+  cover?: MediaAsset | null;
   university?: University | null;
   products?: Product[];
 }
@@ -18,7 +21,17 @@ export interface Product {
   name: string;
   price: number;
   soldOut: boolean;
+  image?: MediaAsset | null;
   shop?: Shop | null;
+}
+
+export interface Order {
+  documentId: string;
+  buyerName: string;
+  amount: number;
+  status: 'owed' | 'paid' | 'collected' | 'cancelled';
+  receipt?: MediaAsset | null;
+  product?: Product | null;
 }
 
 export interface AuthUser {
