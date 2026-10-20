@@ -1,0 +1,24 @@
+main {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 20px 0 40px;
+}
+
+header {
+  margin-bottom: 8px;
+  padding: 22px;
+  border-radius: 16px;
+  background: var(--orange);
+  color: white;
+}
+
+h1 { margin: 8px 0 0; font-size: 40px; }
+.section { margin: 22px 0 12px; font-size: 20px; font-weight: 800; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.empty { color: var(--muted); font-weight: 600; }

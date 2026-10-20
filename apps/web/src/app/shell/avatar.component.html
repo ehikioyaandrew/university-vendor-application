@@ -1,0 +1,24 @@
+<svg class="avatar" [class.sm]="size === 'sm'" [class.lg]="size === 'lg'" viewBox="0 0 80 80" role="img" [attr.aria-label]="name">
+  <circle cx="40" cy="40" r="40" [attr.fill]="paint.bg" />
+  <circle cx="40" cy="46" r="22" [attr.fill]="paint.skin" />
+  @switch (paint.style) {
+    @case (0) {
+      <path d="M18 38c2-16 42-18 46-2 2 8-6 4-8-2-4-10-26-10-30 0-2 6-10 10-8 4z" [attr.fill]="paint.hair" />
+    }
+    @case (1) {
+      <path d="M16 44c0-20 12-30 24-30s24 10 24 30c-6-8-14-10-24-10s-18 2-24 10z" [attr.fill]="paint.hair" />
+      <circle cx="58" cy="22" r="6" [attr.fill]="paint.accent" />
+    }
+    @case (2) {
+      <path d="M20 34c4-18 36-18 40 0v8H20z" [attr.fill]="paint.accent" />
+      <path d="M22 34c2-12 34-12 36 0" [attr.fill]="paint.hair" />
+    }
+    @default {
+      <path d="M18 40c4-20 40-22 46 0-8-6-14-8-23-8s-16 2-23 8z" [attr.fill]="paint.hair" />
+      <rect x="24" y="24" width="32" height="6" rx="3" [attr.fill]="paint.accent" />
+    }
+  }
+  <circle cx="32" cy="46" r="2.2" [attr.fill]="paint.accent" />
+  <circle cx="48" cy="46" r="2.2" [attr.fill]="paint.accent" />
+  <path d="M33 54c2.4 3 11 3 14 0" fill="none" [attr.stroke]="paint.hair" stroke-width="2" stroke-linecap="round" />
+</svg>

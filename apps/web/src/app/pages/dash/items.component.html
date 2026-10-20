@@ -1,0 +1,28 @@
+<app-page-heading kicker="Your stall" title="Items" />
+<div class="split">
+  <div class="grid">
+    @for (item of stall.shop?.products ?? []; track item.documentId) {
+      <app-product-card [product]="item" [showShop]="false" [showCategory]="true" />
+    } @empty {
+      <p>No items yet. Add the first one beside this list.</p>
+    }
+  </div>
+  <form (ngSubmit)="add()">
+    <h2>New item</h2>
+    <app-field label="Name">
+      <input pInputText name="item" [(ngModel)]="itemName" required />
+    </app-field>
+    <app-field label="Category">
+      <p-select name="category" [options]="stall.categories" optionLabel="name" optionValue="documentId" [(ngModel)]="category" [fluid]="true" />
+    </app-field>
+    <app-field label="Price in naira">
+      <p-inputnumber name="price" [(ngModel)]="price" [min]="0" [fluid]="true" />
+    </app-field>
+    <app-field label="Photo">
+      <input name="photo" type="file" accept="image/*" (change)="pick($event)" />
+    </app-field>
+    <p>Skip the photo and the market shows a generated avatar.</p>
+    @if (error) { <p-message severity="error" [text]="error" /> }
+    <p-button type="submit" label="Add item" [fluid]="true" [disabled]="busy" />
+  </form>
+</div>

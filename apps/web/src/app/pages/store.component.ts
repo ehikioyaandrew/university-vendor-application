@@ -1,41 +1,16 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/api.service';
 import { Shop } from '../core/models';
 import { HeaderComponent } from '../shell/header.component';
 import { PhotoComponent } from '../shell/photo.component';
+import { ProductCardComponent } from '../ui/product-card/product-card.component';
 
 @Component({
   selector: 'app-store',
-  imports: [HeaderComponent, RouterLink, DecimalPipe, PhotoComponent],
-  template: `
-    <app-header />
-    <main class="wrap">
-      @if (shop) {
-        <app-photo kind="cover" [file]="shop.cover" [alt]="shop.name" fallback="#ff6a00" />
-        <header class="dash-hero">
-          <p>{{ shop.university?.name }}</p>
-          <h1>{{ shop.name }}</h1>
-          <p>{{ shop.spot }}</p>
-        </header>
-        <div class="section-title">From this stall</div>
-        <div class="grid">
-          @for (item of shop.products ?? []; track item.documentId) {
-            <a class="card" [routerLink]="['/items', item.documentId]">
-              <app-photo [file]="item.image" [alt]="item.name" fallback="#243038" />
-              <div class="card-body">
-                <p class="price">₦{{ item.price | number }}</p>
-                <h2>{{ item.name }}</h2>
-              </div>
-            </a>
-          } @empty {
-            <p class="lead">This stall has not listed an item yet.</p>
-          }
-        </div>
-      }
-    </main>
-  `,
+  imports: [HeaderComponent, PhotoComponent, ProductCardComponent],
+  templateUrl: './store.component.html',
+  styleUrl: './store.component.scss',
 })
 export class StoreComponent {
   private readonly api = inject(ApiService);

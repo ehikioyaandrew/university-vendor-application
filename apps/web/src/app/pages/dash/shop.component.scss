@@ -1,0 +1,10 @@
+p { color: var(--muted); font-weight: 700; }
+
+form {
+  display: grid;
+  gap: 12px;
+  max-width: 420px;
+  padding: 20px;
+  border-radius: 16px;
+  background: white;
+}

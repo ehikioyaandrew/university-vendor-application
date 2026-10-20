@@ -1,0 +1,12 @@
+<app-page-heading kicker="How buyers see you" title="Shop" />
+@if (stall.shop) {
+  <app-photo kind="cover" [file]="stall.shop.cover" [alt]="stall.shop.name" />
+  <p>{{ stall.shop.name }} · {{ stall.shop.spot }}</p>
+}
+<form (ngSubmit)="save()">
+  <app-field label="Shop photo">
+    <input name="cover" type="file" accept="image/*" (change)="pick($event)" />
+  </app-field>
+  @if (error) { <p-message severity="error" [text]="error" /> }
+  <p-button type="submit" label="Save shop photo" [loading]="busy" />
+</form>

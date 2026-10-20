@@ -1,0 +1,28 @@
+<app-auth-stage>
+  <form (ngSubmit)="submit()">
+    <p class="kicker">New stall</p>
+    <h1>Open your shop.</h1>
+    <p class="lead">Share one link on your status. The rest of campus can find the stall.</p>
+    <app-field label="University">
+      <p-select name="university" [options]="universities" optionLabel="name" optionValue="documentId" [(ngModel)]="university" placeholder="Choose a campus" [fluid]="true" />
+    </app-field>
+    <app-field label="Your name">
+      <input pInputText name="name" [(ngModel)]="name" required />
+    </app-field>
+    <app-field label="Phone">
+      <input pInputText name="phone" [(ngModel)]="phone" required />
+    </app-field>
+    <app-field label="Password">
+      <p-password name="password" [(ngModel)]="password" [feedback]="false" [toggleMask]="true" [fluid]="true" />
+    </app-field>
+    <app-field label="Shop name">
+      <input pInputText name="shop" [(ngModel)]="shop" required />
+    </app-field>
+    <app-field label="Where buyers collect">
+      <input pInputText name="spot" [(ngModel)]="spot" required />
+    </app-field>
+    @if (error) { <p-message severity="error" [text]="error" /> }
+    <p-button type="submit" label="Create my shop" [fluid]="true" [loading]="busy" />
+    <p class="fine">Already selling? <a routerLink="/login">Log in</a></p>
+  </form>
+</app-auth-stage>

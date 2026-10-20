@@ -1,4 +1,5 @@
 import { factories, type Core } from '@strapi/strapi';
+import { buildBook, type BookOrder, type SalesRange } from '../book';
 
 async function ownedShop(strapi: Core.Strapi, user: { id: number }) {
   const shops = await strapi.documents('api::shop.shop').findMany({
@@ -12,16 +13,46 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
     const user = ctx.state.user;
     if (!user) return ctx.unauthorized();
     const shop = await ownedShop(strapi, user);
-    if (!shop) return ctx.badRequest('Open a shop before saving a receipt');
+    if (!shop) return ctx.badRequest('Open a shop before recording a sale');
 
     const body = ctx.request.body?.data ?? {};
+    const buyerName = String(body.buyerName ?? '').trim();
+    if (buyerName.length < 2) return ctx.badRequest('Add the buyer name');
+    const quantity = Number(body.quantity ?? 1);
+    if (!Number.isInteger(quantity) || quantity < 1) return ctx.badRequest('Quantity starts at 1');
+
+    let amount = Number(body.amount);
+    let productId: string | undefined;
+    if (body.product) {
+      const product = await strapi.documents('api::product.product').findOne({
+        documentId: body.product,
+        populate: { shop: true },
+      });
+      if (!product || product.shop?.documentId !== shop.documentId) {
+        return ctx.badRequest('That item is not on your stall');
+      }
+      amount = Number(product.price) * quantity;
+      productId = product.documentId;
+    }
+    if (!Number.isInteger(amount) || amount < 0) return ctx.badRequest('Amount is in whole naira');
+
+    let paymentMethod: 'cash' | 'transfer' | undefined;
+    if (body.paymentMethod) {
+      if (body.paymentMethod !== 'cash' && body.paymentMethod !== 'transfer') {
+        return ctx.badRequest('Payment is cash or transfer');
+      }
+      paymentMethod = body.paymentMethod;
+    }
+
     const order = await strapi.documents('api::order.order').create({
       data: {
-        buyerName: body.buyerName,
-        amount: body.amount,
-        status: 'owed',
+        buyerName,
+        amount,
+        quantity,
+        status: paymentMethod ? 'paid' : 'owed',
         shop: shop.documentId,
-        ...(body.product ? { product: body.product } : {}),
+        ...(productId ? { product: productId } : {}),
+        ...(paymentMethod ? { paymentMethod, paidAt: new Date().toISOString() } : {}),
         ...(body.receipt ? { receipt: body.receipt } : {}),
       },
     });
@@ -61,6 +92,7 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
       data: {
         buyerName: user.displayName || user.username,
         amount: Number(product.price),
+        quantity: 1,
         status: 'owed',
         fulfillment,
         note: body.note ?? '',
@@ -100,8 +132,28 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
       filters: { shop: { documentId: shop.documentId } },
       populate: { receipt: true, product: true, customer: true, address: true },
       sort: 'createdAt:desc',
+      limit: 500,
     });
     ctx.body = { data: orders };
+  },
+
+  async summary(ctx) {
+    const user = ctx.state.user;
+    if (!user) return ctx.unauthorized();
+    const shop = await ownedShop(strapi, user);
+    const asked = ctx.query.range;
+    const range: SalesRange = asked === 'week' || asked === 'month' ? asked : 'day';
+    if (!shop) {
+      ctx.body = { data: buildBook([], range) };
+      return;
+    }
+    const orders = await strapi.documents('api::order.order').findMany({
+      filters: { shop: { documentId: shop.documentId } },
+      populate: { product: true },
+      sort: 'createdAt:desc',
+      limit: 500,
+    });
+    ctx.body = { data: buildBook(orders as unknown as BookOrder[], range) };
   },
 
   async update(ctx) {
@@ -112,14 +164,43 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
       documentId: ctx.params.id,
       populate: { shop: true },
     });
-    if (!current || !shop || current.shop?.documentId !== shop.documentId) return ctx.notFound();
-    const status = ctx.request.body?.data?.status;
-    if (!['owed', 'paid', 'collected', 'cancelled'].includes(status)) {
-      return ctx.badRequest('Unknown order status');
+    const saved = current as typeof current & {
+      paymentMethod?: 'cash' | 'transfer' | null;
+      paidAt?: string | null;
+    };
+    if (!saved || !shop || saved.shop?.documentId !== shop.documentId) return ctx.notFound();
+    const body = ctx.request.body?.data ?? {};
+    const data: {
+      status?: 'owed' | 'paid' | 'collected' | 'cancelled';
+      paymentMethod?: 'cash' | 'transfer';
+      paidAt?: string;
+    } = {};
+    if (body.status) {
+      if (!['owed', 'paid', 'collected', 'cancelled'].includes(body.status)) {
+        return ctx.badRequest('Unknown order status');
+      }
+      data.status = body.status;
     }
+    if (body.paymentMethod) {
+      if (body.paymentMethod !== 'cash' && body.paymentMethod !== 'transfer') {
+        return ctx.badRequest('Payment is cash or transfer');
+      }
+      data.paymentMethod = body.paymentMethod;
+    }
+    if (!data.status && !data.paymentMethod) return ctx.badRequest('Nothing to update');
+
+    const status = data.status ?? saved.status;
+    const method = data.paymentMethod ?? saved.paymentMethod;
+    if ((status === 'paid' || status === 'collected') && !method) {
+      return ctx.badRequest('Choose cash or transfer');
+    }
+    if ((status === 'paid' || status === 'collected') && !saved.paidAt) {
+      data.paidAt = new Date().toISOString();
+    }
+
     const order = await strapi.documents('api::order.order').update({
-      documentId: current.documentId,
-      data: { status },
+      documentId: saved.documentId,
+      data,
     });
     ctx.body = { data: order };
   },

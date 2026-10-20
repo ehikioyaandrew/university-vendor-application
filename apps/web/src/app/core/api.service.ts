@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { MediaAsset } from './media';
-import { Address, AuthResponse, Category, ListResponse, Order, Product, Review, Shop, University } from './models';
+import { Address, AuthResponse, Category, ListResponse, Order, Product, Review, SalesBook, SalesRange, Shop, University } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -141,9 +141,33 @@ export class ApiService {
     return this.http.get<ListResponse<Order>>(`${this.base}/api/orders`, { headers: this.auth(token) });
   }
 
-  addReceipt(token: string, input: { buyerName: string; amount: number; receipt?: number }) {
-    return this.http.post<{ data: Order }>(
-      `${this.base}/api/orders`,
+  summary(token: string, range: SalesRange) {
+    return this.http.get<{ data: SalesBook }>(`${this.base}/api/orders/summary?range=${range}`, {
+      headers: this.auth(token),
+    });
+  }
+
+  recordSale(
+    token: string,
+    input: {
+      buyerName: string;
+      amount?: number;
+      quantity?: number;
+      product?: string;
+      paymentMethod?: 'cash' | 'transfer';
+      receipt?: number;
+    },
+  ) {
+    return this.http.post<{ data: Order }>(`${this.base}/api/orders`, { data: input }, { headers: this.auth(token) });
+  }
+
+  settleOrder(
+    token: string,
+    documentId: string,
+    input: { status?: Order['status']; paymentMethod?: 'cash' | 'transfer' },
+  ) {
+    return this.http.put<{ data: Order }>(
+      `${this.base}/api/orders/${documentId}`,
       { data: input },
       { headers: this.auth(token) },
     );

@@ -1,0 +1,91 @@
+@if (!stall.shop || !stall.book) {
+  <p class="muted">Opening your sales book…</p>
+} @else {
+  <div class="toolbar">
+    <p-selectbutton [options]="ranges" optionLabel="label" optionValue="id" [ngModel]="stall.range" (ngModelChange)="stall.setRange($event)" />
+    <div class="export">
+      <p-button label="Excel" severity="secondary" [outlined]="true" (onClick)="excel()" />
+      <p-button label="PDF" severity="secondary" [outlined]="true" (onClick)="pdf()" />
+    </div>
+  </div>
+
+  <section class="till" [class.bump]="bump">
+    <p class="kicker"><span class="live"></span> {{ fresh }}</p>
+    <p class="label">Made {{ stall.book.label.toLowerCase() }}</p>
+    <p class="made">₦&nbsp;{{ stall.book.made | number }}</p>
+    <p class="span">{{ stall.book.span }} · {{ stall.book.salesCount }} {{ stall.book.salesCount === 1 ? 'sale' : 'sales' }}</p>
+  </section>
+
+  <div class="stats">
+    <app-pay-stat label="Cash" [amount]="stall.book.cash" tone="cash" />
+    <app-pay-stat label="Transfer" [amount]="stall.book.transfer" tone="transfer" />
+    <app-pay-stat label="Still owing" [amount]="stall.book.owing" tone="owing" />
+  </div>
+  @if (stall.book.unmarked > 0) {
+    <p class="muted">₦{{ stall.book.unmarked | number }} is already in, but not tagged cash or transfer. Tag it on Orders.</p>
+  }
+
+  <div class="split">
+    <div>
+      <div class="section">What sold <span>{{ stall.book.label }}</span></div>
+      @for (item of stall.book.items; track item.name) {
+        <app-person-row
+          [name]="item.name"
+          [title]="item.name"
+          [detail]="item.quantity + ' sold'"
+          [aside]="'₦' + (item.amount | number)"
+        />
+      } @empty {
+        <p class="muted">Nothing sold in this period yet. Record a sale and this number moves.</p>
+      }
+
+      <div class="section">Each sale</div>
+      @for (sale of stall.book.sales; track sale.at + sale.buyerName + sale.amount) {
+        <app-person-row
+          [name]="sale.buyerName"
+          [title]="sale.buyerName"
+          [detail]="sale.quantity + ' × ' + sale.item + ' · ₦' + (sale.amount | number)"
+          [tag]="payLabel(sale.paymentMethod, sale.status)"
+          [severity]="paySeverity(sale.paymentMethod, sale.status)"
+        />
+      } @empty {
+        <p class="muted">No sales in {{ stall.book.label.toLowerCase() }}. This week and this month keep the older ones.</p>
+      }
+    </div>
+
+    <form (ngSubmit)="save()">
+      <div class="sale-head">
+        @if (chosen) {
+          <app-photo [file]="chosen.image" [alt]="chosen.name" />
+        } @else {
+          <app-avatar [name]="buyerName || stall.shop.name" size="lg" />
+        }
+        <div>
+          <h2>Record a sale</h2>
+          <p class="muted">Skip the receipt photo. The buyer still gets an avatar.</p>
+        </div>
+      </div>
+      <app-field label="Buyer">
+        <input pInputText name="buyer" [(ngModel)]="buyerName" required />
+      </app-field>
+      <app-field label="Item">
+        <p-select name="item" [options]="itemOptions" optionLabel="label" optionValue="value" [(ngModel)]="productId" [fluid]="true" />
+      </app-field>
+      <app-field label="Quantity">
+        <p-inputnumber name="qty" [(ngModel)]="quantity" [min]="1" [fluid]="true" />
+      </app-field>
+      @if (!productId) {
+        <app-field label="Amount in naira">
+          <p-inputnumber name="amount" [(ngModel)]="amount" [min]="0" [fluid]="true" />
+        </app-field>
+      }
+      <p-selectbutton [options]="pays" optionLabel="label" optionValue="id" [(ngModel)]="pay" />
+      <p class="muted">{{ preview }}</p>
+      <app-field label="Receipt photo">
+        <input name="receipt" type="file" accept="image/*" (change)="pick($event)" />
+      </app-field>
+      @if (error) { <p-message severity="error" [text]="error" /> }
+      <p-button type="submit" [label]="busy ? 'Saving…' : 'Add to the book'" [fluid]="true" [disabled]="busy" />
+    </form>
+  </div>
+}

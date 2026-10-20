@@ -1,0 +1,21 @@
+<header>
+  <div class="bar">
+    <a class="logo" routerLink="/">Oja</a>
+    <form (ngSubmit)="search()">
+      <input pInputText name="q" [(ngModel)]="query" placeholder="Search food, wigs, chargers, binding" />
+      <p-button type="submit" label="Search" />
+    </form>
+    <div class="actions">
+      @if (session.token()) {
+        <a class="who" routerLink="/dashboard">
+          <app-avatar [name]="name" size="sm" />
+          Dashboard
+        </a>
+        <p-button label="Log out" severity="secondary" [outlined]="true" (onClick)="logout()" />
+      } @else {
+        <p-button label="Log in" severity="secondary" [outlined]="true" (onClick)="go('/login')" />
+        <p-button label="Sign up" (onClick)="go('/signup')" />
+      }
+    </div>
+  </div>
+</header>

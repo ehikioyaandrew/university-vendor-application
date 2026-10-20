@@ -1,0 +1,25 @@
+<app-header />
+<section class="hero">
+  <div class="page">
+    <h1>Every stall on campus. One market.</h1>
+    <p>Food, fashion, beauty, gadgets and print from students and vendors at your university. Pay now, or collect and pay later.</p>
+    <div class="actions">
+      <p-button label="Browse the market" severity="contrast" (onClick)="open('/market')" />
+      <p-button label="Open your shop" severity="secondary" [outlined]="true" (onClick)="open('/signup')" />
+    </div>
+  </div>
+</section>
+<main class="page">
+  <div class="section">On campus now <span>{{ products.length }} items</span></div>
+  <div class="grid">
+    @for (item of products; track item.documentId) {
+      <app-product-card [product]="item" [showCategory]="false" />
+    }
+  </div>
+  <div class="section">How a seller uses Oja</div>
+  <div class="steps">
+    <article><strong>1. Open a shop</strong><p>Pick your university, name the stall, and say where buyers collect.</p></article>
+    <article><strong>2. Show up in the market</strong><p>Your items sit beside every other vendor. Your dashboard stays yours.</p></article>
+    <article><strong>3. See the day</strong><p>What sold, what is in hand, and who still owes you.</p></article>
+  </div>
+</main>

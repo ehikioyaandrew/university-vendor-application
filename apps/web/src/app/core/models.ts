@@ -44,13 +44,51 @@ export interface Order {
   documentId: string;
   buyerName: string;
   amount: number;
+  quantity?: number;
   status: 'owed' | 'paid' | 'collected' | 'cancelled';
+  paymentMethod?: 'cash' | 'transfer' | null;
+  paidAt?: string | null;
+  createdAt?: string;
   fulfillment?: 'pickup' | 'delivery';
   note?: string;
   receipt?: MediaAsset | null;
   product?: Product | null;
   shop?: Shop | null;
   address?: Address | null;
+}
+
+export type SalesRange = 'day' | 'week' | 'month';
+
+export interface SaleLine {
+  at: string;
+  buyerName: string;
+  item: string;
+  quantity: number;
+  amount: number;
+  paymentMethod: 'cash' | 'transfer' | null;
+  status: string;
+}
+
+export interface SoldItem {
+  name: string;
+  quantity: number;
+  amount: number;
+}
+
+export interface SalesBook {
+  range: SalesRange;
+  label: string;
+  span: string;
+  from: string;
+  asOf: string;
+  made: number;
+  cash: number;
+  transfer: number;
+  unmarked: number;
+  owing: number;
+  salesCount: number;
+  items: SoldItem[];
+  sales: SaleLine[];
 }
 
 export interface Review {

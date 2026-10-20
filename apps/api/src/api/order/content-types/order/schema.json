@@ -32,6 +32,12 @@
       "default": "pickup"
     },
     "note": { "type": "text" },
+    "quantity": { "type": "integer", "default": 1, "min": 1 },
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": ["cash", "transfer"]
+    },
+    "paidAt": { "type": "datetime" },
     "customer": {
       "type": "relation",
       "relation": "manyToOne",

@@ -1,0 +1,19 @@
+<app-header />
+<main>
+  @if (shop) {
+    <app-photo kind="cover" [file]="shop.cover" [alt]="shop.name" />
+    <header>
+      <p>{{ shop.university?.name }}</p>
+      <h1>{{ shop.name }}</h1>
+      <p>{{ shop.spot }}</p>
+    </header>
+    <div class="section">From this stall</div>
+    <div class="grid">
+      @for (item of shop.products ?? []; track item.documentId) {
+        <app-product-card [product]="item" [showShop]="false" />
+      } @empty {
+        <p class="empty">This stall has not listed an item yet.</p>
+      }
+    </div>
+  }
+</main>

@@ -1,0 +1,16 @@
+<app-auth-stage>
+  <form (ngSubmit)="submit()">
+    <p class="kicker">Seller door</p>
+    <h1>Welcome back.</h1>
+    <p class="lead">Your stall is still on the market. Jump in and see who is waiting.</p>
+    <app-field label="Phone">
+      <input pInputText name="phone" [(ngModel)]="phone" inputmode="tel" autocomplete="username" placeholder="080…" required />
+    </app-field>
+    <app-field label="Password">
+      <p-password name="password" [(ngModel)]="password" [feedback]="false" [toggleMask]="true" [fluid]="true" autocomplete="current-password" />
+    </app-field>
+    @if (error) { <p-message severity="error" [text]="error" /> }
+    <p-button type="submit" label="Enter Oja" [fluid]="true" />
+    <p class="fine">New stall? <a routerLink="/signup">Open one</a></p>
+  </form>
+</app-auth-stage>

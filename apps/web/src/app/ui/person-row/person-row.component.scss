@@ -1,0 +1,14 @@
+article {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 16px;
+  background: white;
+}
+
+.main { flex: 1; min-width: 0; }
+strong { display: block; }
+p { margin: 4px 0 0; color: var(--orange-deep); font-size: 12px; font-weight: 800; }
+b { font-size: 16px; }

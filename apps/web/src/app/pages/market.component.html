@@ -1,0 +1,29 @@
+<app-header />
+<main class="mx-auto grid w-[min(1180px,calc(100%-2rem))] items-start gap-[18px] py-[18px] pb-10 lg:grid-cols-[220px_1fr]">
+  <aside>
+    <p>Category</p>
+    <button type="button" [class.on]="!categoryId" (click)="categoryId = ''">All</button>
+    @for (category of categories; track category.documentId) {
+      <button type="button" [class.on]="categoryId === category.documentId" (click)="categoryId = category.documentId">
+        {{ category.name }}
+      </button>
+    }
+    <p>Campus</p>
+    <button type="button" [class.on]="!universityId" (click)="universityId = ''">Every campus</button>
+    @for (campus of universities; track campus.documentId) {
+      <button type="button" [class.on]="universityId === campus.documentId" (click)="universityId = campus.documentId">
+        {{ campus.name }}
+      </button>
+    }
+  </aside>
+  <section>
+    <div class="section">{{ title }} <span>{{ shown.length }} items</span></div>
+    <div class="grid">
+      @for (item of shown; track item.documentId) {
+        <app-product-card [product]="item" />
+      } @empty {
+        <p class="empty">Nothing in this filter yet.</p>
+      }
+    </div>
+  </section>
+</main>

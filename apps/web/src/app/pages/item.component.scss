@@ -1,0 +1,17 @@
+main {
+  display: grid;
+  gap: 18px;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 20px 0 40px;
+}
+
+@media (min-width: 860px) {
+  main { grid-template-columns: 1.1fr 0.9fr; }
+}
+
+section { padding: 18px; border-radius: 16px; background: white; }
+.price { margin: 0; font-size: 32px; font-weight: 800; }
+h1 { margin: 8px 0 0; }
+.by, a { color: var(--orange-deep); font-weight: 800; }
+.fine { color: var(--muted); font-weight: 600; }

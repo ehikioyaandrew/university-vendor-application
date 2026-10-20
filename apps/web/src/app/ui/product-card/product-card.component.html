@@ -1,0 +1,16 @@
+<a class="block overflow-hidden rounded-xl bg-white" [routerLink]="['/items', product.documentId]">
+  <app-photo [file]="product.image" [alt]="product.name" />
+  <div class="px-3.5 pb-4 pt-3">
+    <p class="m-0 text-base font-extrabold">₦{{ product.price | number }}</p>
+    <h2 class="m-0 mt-1 text-[15px] font-extrabold">{{ product.name }}</h2>
+    @if (showShop && product.shop?.name) {
+      <p class="by">{{ product.shop?.name }}</p>
+    }
+    @if (showCategory && product.category?.name) {
+      <p class="by">{{ product.category?.name }}</p>
+    }
+    @if (showShop && product.shop?.university?.name) {
+      <p class="meta">{{ product.shop?.university?.name }}@if (product.category) { · {{ product.category.name }} }</p>
+    }
+  </div>
+</a>

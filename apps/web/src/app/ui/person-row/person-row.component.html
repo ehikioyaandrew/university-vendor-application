@@ -1,0 +1,13 @@
+<article>
+  <app-avatar [name]="name" size="sm" />
+  <div class="main">
+    <strong>{{ title }}</strong>
+    <p>{{ detail }}</p>
+    <ng-content />
+  </div>
+  @if (aside) {
+    <b>{{ aside }}</b>
+  } @else if (tag) {
+    <p-tag [value]="tag" [severity]="severity" />
+  }
+</article>

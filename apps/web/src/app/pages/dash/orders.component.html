@@ -1,0 +1,30 @@
+<app-page-heading kicker="The full book" title="Orders" />
+<p-selectbutton [options]="filters" optionLabel="label" optionValue="id" [(ngModel)]="filter" />
+@for (order of visible; track order.documentId) {
+  <app-person-row
+    [name]="order.buyerName"
+    [title]="order.buyerName"
+    [detail]="line(order)"
+    [tag]="payLabel(order)"
+    [severity]="paySeverity(order)"
+  >
+    <div class="actions">
+      @if (order.status === 'owed') {
+        <p-button label="Cash" size="small" severity="success" [outlined]="true" (onClick)="settle(order, 'cash')" />
+        <p-button label="Transfer" size="small" severity="info" [outlined]="true" (onClick)="settle(order, 'transfer')" />
+      }
+      @if (order.status === 'paid') {
+        <p-button label="Collected" size="small" severity="secondary" [outlined]="true" (onClick)="collect(order)" />
+      }
+      @if ((order.status === 'paid' || order.status === 'collected') && !order.paymentMethod) {
+        <p-button label="Tag cash" size="small" severity="success" [outlined]="true" (onClick)="tag(order, 'cash')" />
+        <p-button label="Tag transfer" size="small" severity="info" [outlined]="true" (onClick)="tag(order, 'transfer')" />
+      }
+    </div>
+    @if (src(order); as photo) {
+      <img [src]="photo" alt="Receipt" />
+    }
+  </app-person-row>
+} @empty {
+  <p>No orders in this filter. Record a sale from Sales.</p>
+}

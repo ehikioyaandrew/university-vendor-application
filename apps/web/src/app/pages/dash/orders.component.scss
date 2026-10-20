@@ -1,0 +1,5 @@
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; margin-top: 8px; }
+p { color: var(--muted); font-weight: 600; }
+:host { display: block; }
+:host ::ng-deep .p-selectbutton { margin-bottom: 8px; }

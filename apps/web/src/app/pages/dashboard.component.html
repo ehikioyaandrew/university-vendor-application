@@ -1,0 +1,24 @@
+<app-header />
+<main>
+  <aside>
+    @if (!stall.token) {
+      <a routerLink="/login">Log in</a>
+    } @else {
+      <a routerLink="/dashboard" routerLinkActive="on" [routerLinkActiveOptions]="{ exact: true }">Sales</a>
+      <a routerLink="/dashboard/items" routerLinkActive="on">Items</a>
+      <a routerLink="/dashboard/orders" routerLinkActive="on">Orders</a>
+      <a routerLink="/dashboard/shop" routerLinkActive="on">Shop</a>
+      @if (stall.shop) {
+        <a [routerLink]="['/shops', stall.shop.documentId]">Public shop</a>
+      }
+    }
+  </aside>
+  <section>
+    @if (!stall.token) {
+      <p>Log in to open your stall.</p>
+      <p-button label="Log in" (onClick)="openLogin()" />
+    } @else {
+      <router-outlet />
+    }
+  </section>
+</main>

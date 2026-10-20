@@ -1,0 +1,16 @@
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --orange: #ff6a00;
+  --orange-deep: #e25700;
+  --ink: #1a1a1a;
+  --muted: #667085;
+  --page: #f4f5f7;
+  --sans: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--sans); background: var(--page); color: var(--ink); }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font-family: inherit; }

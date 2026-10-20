@@ -64,6 +64,7 @@ const sellerActions = [
   'api::order.order.find',
   'api::order.order.findOne',
   'api::order.order.update',
+  'api::order.order.summary',
   'api::university.university.find',
   'api::university.university.findOne',
   'api::category.category.find',

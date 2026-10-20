@@ -1,0 +1,35 @@
+<div class="gate">
+  <aside class="stage" aria-hidden="true">
+    <div class="glow"></div>
+    <p class="kicker"><span class="live"></span> Campus is live</p>
+    <h2>Every stall.<br />One status link.</h2>
+    <p class="line">{{ line }}</p>
+    <div class="floaters">
+      @for (item of tickets; track item.documentId) {
+        <article class="ticket">
+          <span>₦{{ item.price | number }}</span>
+          <strong>{{ item.name }}</strong>
+          <em>{{ item.shop?.university?.name || item.shop?.spot || item.shop?.name }}</em>
+        </article>
+      }
+    </div>
+    @if (loop.length) {
+      <div class="marquee">
+        <div class="track">
+          @for (name of loop; track $index) {
+            <span>{{ name }}</span>
+          }
+        </div>
+      </div>
+    }
+  </aside>
+  <section class="panel">
+    <div class="top">
+      <a class="logo" routerLink="/">Oja</a>
+      <a class="browse" routerLink="/market">Browse the market</a>
+    </div>
+    <div class="card">
+      <ng-content />
+    </div>
+  </section>
+</div>

@@ -1,0 +1,7 @@
+@if (src && !useAvatar) {
+  <img [class]="kind" [src]="src" [alt]="alt" (load)="measure($event)" (error)="useAvatar = true" />
+} @else {
+  <div [class]="kind" class="avatar-fill" [style.background]="paint.bg">
+    <app-avatar [name]="alt || 'Oja'" />
+  </div>
+}

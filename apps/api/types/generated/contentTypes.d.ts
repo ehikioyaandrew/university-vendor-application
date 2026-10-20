@@ -544,8 +544,18 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
       Schema.Attribute.Private;
     note: Schema.Attribute.Text;
+    paidAt: Schema.Attribute.DateTime;
+    paymentMethod: Schema.Attribute.Enumeration<['cash', 'transfer']>;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
+    quantity: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
     receipt: Schema.Attribute.Media<'images'>;
     shop: Schema.Attribute.Relation<'manyToOne', 'api::shop.shop'>;
     status: Schema.Attribute.Enumeration<
